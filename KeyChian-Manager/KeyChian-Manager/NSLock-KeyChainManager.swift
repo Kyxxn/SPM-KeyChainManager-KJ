@@ -1,8 +1,8 @@
 import Foundation
 import Security
 
-public final class KeyChainManager {
-    static let shared = KeyChainManager()
+public final class KeyChainManagerWithNSLock {
+    public static let shared = KeyChainManagerWithNSLock()
     private let lock = NSLock()
     
     private init() {}
@@ -20,7 +20,7 @@ public final class KeyChainManager {
     ///  - data: 저장할 데이터
     ///  - account: 저장할 데이터의 키
     ///  - accessibility: 데이터 접근성 (기본값: kSecAttrAccessibleWhenUnlocked)
-    func save(
+    public func save(
         with data: Data,
         account: String,
         accessibility: CFString = kSecAttrAccessibleWhenUnlocked
@@ -66,19 +66,19 @@ public final class KeyChainManager {
     
     // MARK: - Type-Safe Save Methods
     /// 키체인에 문자열을 저장해야 할 경우 데이터로 변환하여 저장합니다.
-    func save(string: String, account: String) throws {
+    public func save(string: String, account: String) throws {
         guard let data = string.data(using: .utf8) else { throw KeyChainError.typeConversionError }
         try save(with: data, account: account)
     }
     
     /// 키체인에 불리언 값을 저장해야 할 경우 데이터로 변환하여 저장합니다.
-    func save(bool: Bool, account: String) throws {
+    public func save(bool: Bool, account: String) throws {
         let data = Data([bool ? 1 : 0])
         try save(with: data, account: account)
     }
     
     /// 키체인에 Codable 타입의 객체를 저장합니다.
-    func save<T: Codable>(object: T, account: String) throws {
+    public func save<T: Codable>(object: T, account: String) throws {
         let data = try JSONEncoder().encode(object)
         try save(with: data, account: account)
     }
@@ -87,7 +87,7 @@ public final class KeyChainManager {
     /// 키체인에서 데이터를 불러옵니다.
     /// - Parameters:
     /// - account: 불러올 데이터의 키
-    func loadData(account: String) throws -> Data? {
+    public func loadData(account: String) throws -> Data? {
         try executeWithLock {
             let query: [CFString: Any] = [
                 kSecClass: kSecClassGenericPassword,
@@ -108,20 +108,20 @@ public final class KeyChainManager {
     }
     
     /// 키체인에서 문자열을 불러옵니다.
-    func loadString(account: String) throws -> String? {
+    public func loadString(account: String) throws -> String? {
         guard let data = try loadData(account: account) else { return nil }
         guard let string = String(data: data, encoding: .utf8) else { throw KeyChainError.typeConversionError }
         return string
     }
     
     /// 키체인에서 불리언 값을 불러옵니다.
-    func loadBool(account: String) throws -> Bool? {
+    public func loadBool(account: String) throws -> Bool? {
         guard let data = try loadData(account: account), !data.isEmpty else { return nil }
         return data[0] != 0
     }
     
     /// 키체인에서 Codable 타입의 객체를 불러옵니다.
-    func loadObject<T: Codable>(account: String, type: T.Type) throws -> T? {
+    public func loadObject<T: Codable>(account: String, type: T.Type) throws -> T? {
         guard let data = try loadData(account: account) else { return nil }
         return try JSONDecoder().decode(type, from: data)
     }
@@ -130,7 +130,7 @@ public final class KeyChainManager {
     /// 키체인에서 데이터를 삭제합니다.
     /// - Parameters:
     /// - account: 삭제할 데이터의 키
-    func delete(account: String) throws {
+    public func delete(account: String) throws {
         try executeWithLock {
             let query: [CFString: Any] = [
                 kSecClass: kSecClassGenericPassword,
