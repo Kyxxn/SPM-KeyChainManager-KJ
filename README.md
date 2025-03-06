@@ -12,7 +12,7 @@ Swift Concurrency 환경에서도 안전하게 동작하도록 설계되었으�
 
 ```swift 
 dependencies: [
-    .package(url: "https://github.com/your-username/KeyChainManager.git", .upToNextMajor(from: "1.0.0"))
+    .package(url: "https://github.com/Kyxxn/KeyChain-Manager.git", .upToNextMajor(from: "1.0.0"))
 ]
 ```
 
