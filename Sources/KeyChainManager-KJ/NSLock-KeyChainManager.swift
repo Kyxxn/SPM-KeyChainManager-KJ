@@ -2,7 +2,7 @@ import Foundation
 import Security
 
 public final class KeyChainManagerWithNSLock {
-    public static let shared = KeyChainManagerWithNSLock()
+    nonisolated(unsafe) public static let shared = KeyChainManagerWithNSLock()
     private let lock = NSLock()
     
     private init() {}
