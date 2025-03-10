@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "KeyChainManager-KJ",
+    platforms: [
+        .iOS(.v13)
+    ],
     products: [
         .library(
             name: "KeyChainManager-KJ",
