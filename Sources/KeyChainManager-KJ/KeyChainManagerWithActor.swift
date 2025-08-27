@@ -15,7 +15,7 @@ public actor KeyChainManagerWithActor {
     public func save(
         with data: Data,
         account: String,
-        accessibility: CFString = kSecAttrAccessibleWhenUnlocked
+        accessibility: CFString = kSecAttrAccessibleAfterFirstUnlock
     ) throws {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
@@ -56,21 +56,33 @@ public actor KeyChainManagerWithActor {
     
     // MARK: - Type-Safe Save Methods
     /// 키체인에 문자열을 저장해야 할 경우 데이터로 변환하여 저장합니다.
-    public func save(string: String, account: String) throws {
+    public func save(
+        string: String,
+        account: String,
+        accessibility: CFString = kSecAttrAccessibleAfterFirstUnlock
+    ) throws {
         guard let data = string.data(using: .utf8) else { throw KeyChainError.typeConversionError }
-        try save(with: data, account: account)
+        try save(with: data, account: account, accessibility: accessibility)
     }
     
     /// 키체인에 불리언 값을 저장해야 할 경우 데이터로 변환하여 저장합니다.
-    public func save(bool: Bool, account: String) throws {
+    public func save(
+        bool: Bool,
+        account: String,
+        accessibility: CFString = kSecAttrAccessibleAfterFirstUnlock
+    ) throws {
         let data = Data([bool ? 1 : 0])
-        try save(with: data, account: account)
+        try save(with: data, account: account, accessibility: accessibility)
     }
     
     /// 키체인에 Codable 타입의 객체를 저장합니다.
-    public func save<T: Codable>(object: T, account: String) throws {
+    public func save<T: Codable>(
+        object: T,
+        account: String,
+        accessibility: CFString = kSecAttrAccessibleAfterFirstUnlock
+    ) throws {
         let data = try JSONEncoder().encode(object)
-        try save(with: data, account: account)
+        try save(with: data, account: account, accessibility: accessibility)
     }
     
     // MARK: - Retrieve Methods
